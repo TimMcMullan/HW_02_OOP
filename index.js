@@ -45,6 +45,11 @@ const promptuser = () => {
             },
         ])
 };
+
+const generateHTML = ({ fname, lname, role, email, github, workplaceID, school }) =>
+
+        `testies`;
+
 const init = () => {
     promptuser()
         .then((data) => fs.writeFileSync('index.html', generateHTML(data)))
@@ -52,8 +57,10 @@ const init = () => {
         .catch((err) => console.error(err));
 };
 
+
 init();
 
+// allows user to view html on local port 8080 
 var http = require('http');
 const { inherits } = require("util");
 
@@ -70,8 +77,13 @@ http.createServer(function (req, res) {
 
 function buildHtml(req) {
   var header = '';
-  var body = '<h1>fubar</h1>';
+ try {
+    var body = fs.readFileSync('index.html', 'utf8')
+  } catch (err) {
+    var body = err;
+  }
 
+  
   // concatenate header string
   // concatenate body string
 
