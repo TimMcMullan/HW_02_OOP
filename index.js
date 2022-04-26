@@ -1,8 +1,17 @@
 // Needed packages
 const inquirer = require("inquirer");
 const fs = require("fs");
+const employees = [];
 
-// The interview: Gathering information for the README.md
+// The interview: Gathering information for the portfolio
+
+// const confirmAnswerValidator = async (input) => {
+//     if (input !== 'y' || input !== 'n') {
+//        return 'Incorrect asnwer';
+//     }
+//     return true;
+//  };
+
 
 const promptuser = () => {
     return inquirer
@@ -34,21 +43,54 @@ const promptuser = () => {
                 name: 'github',
             },
             {
-                type: 'input',
-                message: 'Workplace ID: ',
-                name: 'workplaceID',
+                type: 'number',
+                message: 'Worker Number: ',
+                name: 'worknum',
+                
             },
             {
                 type: 'input',
                 message: 'School',
                 name: 'school',
             },
+            {
+                type: 'list',
+                message: 'Do you want to add another employee?',
+                choices: ['Yes', 'No'],
+                name: 'add',
+                // validate: confirmAnswerValidator
+            },
         ])
-};
+    };
 
-const generateHTML = ({ fname, lname, role, email, github, workplaceID, school }) =>
 
-    `<!DOCTYPE html>
+function teamCard({ fname, lname, role, email, github, workplaceID, school }) {
+    return `<div>
+    <h2>${fname} ${lname}</h2>
+    <h3>${role}</h3>
+    <section>
+        <ul>
+            <li>${fname}</li>
+            <li>${lname}</li>
+            <li>${role}</li>
+            <li><a href="mailto:${email}">${email}</a></li>
+            <li><a href="https://${github}">${github}</a></li>
+            <li>${workplaceID}</li>
+            <li>${school}</li>
+        </ul>
+    </section>
+</div>`;
+}
+
+
+const generateHTML = (data) => {
+    let teamData = '';
+
+    for (var i = 0; i < data.length; i++) {
+        teamData = teamData + teamCard(data[i])
+    }
+
+    return `<!DOCTYPE html>
     <html>
         <head>
             <title>Super Awesome App</title>
@@ -120,31 +162,27 @@ const generateHTML = ({ fname, lname, role, email, github, workplaceID, school }
             </header>
             <main>
                 <div class="flex-container">
-                    <div>
-                        <h2>${fname} ${lname}</h2>
-                        <h3>${role}</h3>
-                        <section>
-                            <ul>
-                                <li>${fname}</li>
-                                <li>${lname}</li>
-                                <li>${role}</li>
-                                <li><a href="mailto:${email}">${email}</a></li>
-                                <li><a href="https://${github}">${github}</a></li>
-                                <li>${workplaceID}</li>
-                                <li>${school}</li>
-                            </ul>
-                        </section>
-                    </div>
+                    ${teamData}
                 </div>
             </main>
         </body>
     </html>`;
+}
+
+
+
+
 
 const init = () => {
     promptuser()
-        .then((data) => fs.writeFileSync('index.html', generateHTML(data)))
-        .then(() => console.log('Successfully wrote Portfolio'))
-        .catch((err) => console.error(err));
+        .then((data) => {
+            employees.push(data)
+            if (data.add === "Yes") {
+                init();
+            } else {
+                fs.writeFileSync('index.html', generateHTML(employees))
+            }
+        });
 };
 
 
