@@ -4,15 +4,6 @@ const fs = require("fs");
 const employees = [];
 
 // The interview: Gathering information for the portfolio
-
-// const confirmAnswerValidator = async (input) => {
-//     if (input !== 'y' || input !== 'n') {
-//        return 'Incorrect asnwer';
-//     }
-//     return true;
-//  };
-
-
 const promptuser = () => {
     return inquirer
         .prompt([
@@ -27,15 +18,15 @@ const promptuser = () => {
                 name: 'lname',
             },
             {
+                type: 'input',
+                message: 'Email Address: ',
+                name: 'email',
+            },
+            {
                 type: 'list',
                 message: 'Role',
                 choices: ['Engineer', 'Manager', 'Intern'],
                 name: 'role',
-            },
-            {
-                type: 'input',
-                message: 'Email Address: ',
-                name: 'email',
             },
             {
                 type: 'input',
@@ -46,7 +37,10 @@ const promptuser = () => {
                 type: 'number',
                 message: 'Worker Number: ',
                 name: 'worknum',
-                
+                validate: function (worknum) {
+                    var valid = Number.isInteger(worknum)
+                    return valid || `Please enter a valid whole number`
+                }
             },
             {
                 type: 'input',
@@ -58,13 +52,12 @@ const promptuser = () => {
                 message: 'Do you want to add another employee?',
                 choices: ['Yes', 'No'],
                 name: 'add',
-                // validate: confirmAnswerValidator
             },
         ])
     };
 
-
-function teamCard({ fname, lname, role, email, github, workplaceID, school }) {
+// build cards for employees 
+function teamCard({ fname, lname, role, email, github, worknum, school }) {
     return `<div>
     <h2>${fname} ${lname}</h2>
     <h3>${role}</h3>
@@ -75,26 +68,27 @@ function teamCard({ fname, lname, role, email, github, workplaceID, school }) {
             <li>${role}</li>
             <li><a href="mailto:${email}">${email}</a></li>
             <li><a href="https://${github}">${github}</a></li>
-            <li>${workplaceID}</li>
+            <li>${worknum}</li>
             <li>${school}</li>
         </ul>
     </section>
 </div>`;
 }
 
-
+// make sure every employee gets a card 
 const generateHTML = (data) => {
     let teamData = '';
 
     for (var i = 0; i < data.length; i++) {
         teamData = teamData + teamCard(data[i])
     }
-
+// build the HTML 
     return `<!DOCTYPE html>
     <html>
         <head>
             <title>Super Awesome App</title>
             <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+            <link rel="stylesheet" href="path/to/font-awesome/css/font-awesome.min.css">
             <style>
                 /* our shizzle goes here */
                 .flex-container {
@@ -168,11 +162,7 @@ const generateHTML = (data) => {
         </body>
     </html>`;
 }
-
-
-
-
-
+// initialize the app 
 const init = () => {
     promptuser()
         .then((data) => {
@@ -185,10 +175,9 @@ const init = () => {
         });
 };
 
-
+// call the initialization function 
 init();
-
-// allows user to view html on local port 8080 
+// check out html on local browser 
 var http = require('http');
 const { inherits } = require("util");
 
@@ -202,7 +191,7 @@ http.createServer(function (req, res) {
     });
     res.end(html);
 }).listen(8080);
-
+// export html 
 function buildHtml(req) {
     try {
         var body = fs.readFileSync('index.html', 'utf8')
@@ -211,8 +200,7 @@ function buildHtml(req) {
     }
 
 
-    // concatenate header string
-    // concatenate body string
+
 
     return body;
 }

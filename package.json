@@ -19,6 +19,7 @@
   "dependencies": {
     "fs": "^0.0.1-security",
     "http": "^0.0.1-security",
-    "inquirer": "^8.2.2"
+    "inquirer": "^8.2.2",
+    "jest": "^28.0.0"
   }
 }
